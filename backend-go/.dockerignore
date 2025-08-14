@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# 환경 파일
+.env*
+
+# 빌드 출력
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+main
+
+# 테스트 파일
+*_test.go
+*.test
+coverage.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 로그
+*.log
+
+# 문서
+README.md
+*.md
+
+# Kubernetes 매니페스트
+k8s/
+*.yaml
+*.yml

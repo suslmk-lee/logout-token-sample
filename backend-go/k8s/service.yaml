@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: logout-token-service
+  namespace: default
+  labels:
+    app: logout-token-backend
+spec:
+  type: ClusterIP  # 클러스터 내부에서만 접근
+  selector:
+    app: logout-token-backend
+  ports:
+  - name: http
+    port: 3001  # Keycloak에서 접근할 포트
+    targetPort: 3001
+    protocol: TCP

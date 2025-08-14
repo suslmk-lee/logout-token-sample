@@ -1,0 +1,129 @@
+---
+# ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logout-token-configmap
+  namespace: default
+data:
+  KEYCLOAK_URL: "https://registry-keycloak2.k-paas.org"
+  KEYCLOAK_REALM: "cp-realm"
+  CLIENT_ID: "cp-client"
+  PORT: "3001"
+  FRONTEND_URL: "http://localhost:3000"
+
+---
+# Secret
+apiVersion: v1
+kind: Secret
+metadata:
+  name: logout-token-secret
+  namespace: default
+type: Opaque
+data:
+  CLIENT_SECRET: bmRkelZWR1c5T0M2Y2N5NlVMclNNcnpkSWxxVGR2NWg=
+  SESSION_SECRET: eW91ci1zZXNzaW9uLXNlY3JldC1rZXktaGVyZQ==
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logout-token-backend
+  namespace: default
+  labels:
+    app: logout-token-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logout-token-backend
+  template:
+    metadata:
+      labels:
+        app: logout-token-backend
+    spec:
+      containers:
+      - name: logout-token-backend
+        image: registry-dev2.k-paas.org/kpaas/logout-token-sample:latest
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: KEYCLOAK_URL
+        - name: KEYCLOAK_REALM
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: KEYCLOAK_REALM
+        - name: CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: CLIENT_ID
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: PORT
+        - name: FRONTEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: FRONTEND_URL
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: logout-token-secret
+              key: CLIENT_SECRET
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: logout-token-secret
+              key: SESSION_SECRET
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /auth/backchannel-logout
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /auth/backchannel-logout
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+---
+# Service (클러스터 내부 접근만)
+apiVersion: v1
+kind: Service
+metadata:
+  name: logout-token-service
+  namespace: default
+  labels:
+    app: logout-token-backend
+spec:
+  type: ClusterIP
+  selector:
+    app: logout-token-backend
+  ports:
+  - name: http
+    port: 3001
+    targetPort: 3001
+    protocol: TCP

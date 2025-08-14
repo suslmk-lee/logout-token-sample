@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logout-token-backend
+  namespace: default
+  labels:
+    app: logout-token-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logout-token-backend
+  template:
+    metadata:
+      labels:
+        app: logout-token-backend
+    spec:
+      containers:
+      - name: logout-token-backend
+        image: registry-dev2.k-paas.org/kpaas/logout-token-sample:latest
+        ports:
+        - containerPort: 3001
+          name: http
+        env:
+        # ConfigMap에서 가져오는 환경변수
+        - name: KEYCLOAK_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: KEYCLOAK_URL
+        - name: KEYCLOAK_REALM
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: KEYCLOAK_REALM
+        - name: CLIENT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: CLIENT_ID
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: PORT
+        - name: FRONTEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: logout-token-configmap
+              key: FRONTEND_URL
+        # Secret에서 가져오는 환경변수
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: logout-token-secret
+              key: CLIENT_SECRET
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: logout-token-secret
+              key: SESSION_SECRET
+        # 리소스 제한
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        # 헬스체크
+        livenessProbe:
+          httpGet:
+            path: /auth/backchannel-logout  # GET 테스트 엔드포인트
+            port: 3001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /auth/backchannel-logout  # GET 테스트 엔드포인트
+            port: 3001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      # 보안 컨텍스트
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000

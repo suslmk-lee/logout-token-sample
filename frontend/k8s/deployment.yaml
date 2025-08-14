@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logout-token-frontend
+  namespace: default
+  labels:
+    app: logout-token-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: logout-token-frontend
+  template:
+    metadata:
+      labels:
+        app: logout-token-frontend
+    spec:
+      containers:
+      - name: logout-token-frontend
+        image: registry-dev2.k-paas.org/kpaas/logout-token-sample-ui:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        # 리소스 제한
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        # 헬스체크
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        # 컨테이너 보안 컨텍스트
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 101  # nginx 사용자
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      # Pod 보안 컨텍스트
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101  # nginx 사용자
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
