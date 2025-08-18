@@ -50,7 +50,6 @@ linters:
     - revive
   
   disable:
-    - gomnd  # 매직 넘버 체크는 비활성화
     - funlen # 함수 길이 체크는 비활성화
     - godot  # 주석 마침표 체크는 비활성화
 
@@ -62,6 +61,10 @@ issues:
   # 제외할 파일들
   exclude-files:
     - ".*_test.go"
+  
+  # 제외할 디렉토리들
+  exclude-dirs:
+    - vendor
   
   # 제외할 규칙들
   exclude-rules:
@@ -78,14 +81,11 @@ run:
   # 타임아웃
   timeout: 5m
   
-  # 체크할 경로
-  skip-dirs:
-    - vendor
-  
   # Go 버전
   go: "1.21"
 
 output:
-  format: colored-line-number
-  print-issued-line: true
-  print-linter-name: true
+  formats:
+    - format: colored-line-number
+      print-issued-line: true
+      print-linter-name: true

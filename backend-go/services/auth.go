@@ -131,4 +131,3 @@ func (a *AuthService) ParseLogoutToken(logoutToken string) (map[string]interface
 
 	return map[string]interface{}(claims), nil
 }
-

@@ -172,4 +172,3 @@ func (h *APIHandler) HandleSSE(c *gin.Context) {
 		}
 	}
 }
-

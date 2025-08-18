@@ -83,10 +83,8 @@ func setupRoutes(r *gin.Engine, authHandler *handlers.AuthHandler, apiHandler *h
 	// API routes (with authentication)
 	api := r.Group("/api")
 	api.Use(middleware.RequireAuth())
-	{
-		api.GET("/user", apiHandler.HandleGetUser)
-		api.GET("/events", apiHandler.HandleSSE)
-	}
+	api.GET("/user", apiHandler.HandleGetUser)
+	api.GET("/events", apiHandler.HandleSSE)
 
 	// Public API routes
 	r.GET("/api/sessions", apiHandler.HandleGetSessions)

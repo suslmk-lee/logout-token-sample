@@ -208,4 +208,3 @@ func (h *AuthHandler) HandleBackchannelLogoutTest(c *gin.Context) {
 	log.Println("=== Backchannel Logout Test (GET) Called ===")
 	c.JSON(http.StatusOK, gin.H{"message": "Backchannel logout endpoint is working"})
 }
-
