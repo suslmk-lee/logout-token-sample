@@ -14,8 +14,3 @@ commonLabels:
   app.kubernetes.io/name: logout-token-backend
   app.kubernetes.io/component: backend
   app.kubernetes.io/managed-by: kustomize
-
-images:
-  - name: logout-token-backend
-    newName: registry-dev2.k-paas.org/kpaas/logout-token-sample
-    newTag: latest
