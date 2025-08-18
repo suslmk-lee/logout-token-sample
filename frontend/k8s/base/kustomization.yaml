@@ -16,5 +16,5 @@ commonLabels:
 
 images:
   - name: logout-token-frontend
-    newName: harbor.k-paas.org/cp-portal-service/logout-token-frontend
+    newName: registry-dev2.k-paas.org/kpaas/logout-token-sample-ui
     newTag: latest
