@@ -28,7 +28,10 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: |
+          # TypeScript 버전 충돌 해결을 위해 package-lock.json 재생성
+          rm -f package-lock.json
+          npm install
 
       - name: Run tests
         working-directory: ./frontend
