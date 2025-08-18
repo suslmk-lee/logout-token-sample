@@ -5,6 +5,6 @@ metadata:
 data:
   KEYCLOAK_URL: "https://registry-keycloak2.k-paas.org"
   KEYCLOAK_REALM: "cp-realm"
-  CLIENT_ID: "logout-token-sample"
+  CLIENT_ID: "cp-client"
   PORT: "3001"
   FRONTEND_URL: "https://logout-token.k-paas.org"
