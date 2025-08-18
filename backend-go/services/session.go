@@ -50,7 +50,7 @@ func (s *SessionService) RemoveSession(userID string) {
 func (s *SessionService) GetAllSessions() []*models.SessionData {
 	s.sessionsMutex.RLock()
 	defer s.sessionsMutex.RUnlock()
-	
+
 	sessions := make([]*models.SessionData, 0, len(s.activeSessions))
 	for _, session := range s.activeSessions {
 		sessions = append(sessions, session)
@@ -82,10 +82,10 @@ func (s *SessionService) NotifySessionInvalidated(userID string) {
 	s.sseClientsMutex.RLock()
 	client, exists := s.sseClients[userID]
 	s.sseClientsMutex.RUnlock()
-	
+
 	log.Printf("🔔 NotifySessionInvalidated called for user: %s", userID)
 	log.Printf("📋 SSE client exists: %v", exists)
-	
+
 	if exists {
 		log.Printf("📤 Sending session_invalidated message to SSE client: %s", userID)
 		select {

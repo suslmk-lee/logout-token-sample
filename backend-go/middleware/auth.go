@@ -16,7 +16,7 @@ func RequireAuth() gin.HandlerFunc {
 
 		log.Printf("requireAuth: session userID = %v", userID)
 		log.Printf("requireAuth: session ID = %s", session.ID())
-		
+
 		// userID가 존재하는지, 그리고 string 타입이 맞는지 확인합니다.
 		userIDStr, ok := userID.(string)
 		if !ok || userIDStr == "" {

@@ -46,22 +46,22 @@ func main() {
 
 	// Session configuration
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
-	
+
 	// 환경에 따른 세션 설정
 	var sameSiteMode http.SameSite
 	if cfg.IsLocalDevelopment() {
-		sameSiteMode = http.SameSiteLaxMode  // 로컬 환경 (HTTP)
+		sameSiteMode = http.SameSiteLaxMode // 로컬 환경 (HTTP)
 	} else {
 		sameSiteMode = http.SameSiteNoneMode // 프로덕션 환경 (HTTPS, Cross-site)
 	}
-	
+
 	store.Options(sessions.Options{
 		Path:     "/",
-		MaxAge:   24 * 60 * 60,    // 24시간
-		HttpOnly: false,           // 디버깅을 위해 false (CORS 환경)
-		Secure:   cfg.IsHTTPS(),  // HTTPS 환경에서는 true
-		SameSite: sameSiteMode,   // 환경에 따라 다르게 설정
-		Domain:   "",             // 도메인 지정하지 않음
+		MaxAge:   24 * 60 * 60,  // 24시간
+		HttpOnly: false,         // 디버깅을 위해 false (CORS 환경)
+		Secure:   cfg.IsHTTPS(), // HTTPS 환경에서는 true
+		SameSite: sameSiteMode,  // 환경에 따라 다르게 설정
+		Domain:   "",            // 도메인 지정하지 않음
 	})
 	r.Use(sessions.Sessions("keycloak-session", store))
 

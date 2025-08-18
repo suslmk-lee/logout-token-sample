@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/golang-jwt/jwt/v5"
@@ -24,7 +26,7 @@ type AuthService struct {
 // NewAuthService creates a new authentication service
 func NewAuthService(cfg *config.Config) (*AuthService, error) {
 	ctx := context.Background()
-	
+
 	provider, err := oidc.NewProvider(ctx, cfg.GetIssuerURL())
 	if err != nil {
 		return nil, fmt.Errorf("failed to get OIDC provider: %w", err)
@@ -50,7 +52,12 @@ func NewAuthService(cfg *config.Config) (*AuthService, error) {
 // GenerateState generates a random state for OAuth2
 func (a *AuthService) GenerateState() string {
 	b := make([]byte, 32)
-	rand.Read(b)
+	_, err := rand.Read(b)
+	if err != nil {
+		log.Printf("Error generating random state: %v", err)
+		// Fallback to timestamp-based state
+		return base64.URLEncoding.EncodeToString([]byte(fmt.Sprintf("state_%d", time.Now().UnixNano())))
+	}
 	return base64.URLEncoding.EncodeToString(b)
 }
 
@@ -124,3 +131,4 @@ func (a *AuthService) ParseLogoutToken(logoutToken string) (map[string]interface
 
 	return map[string]interface{}(claims), nil
 }
+

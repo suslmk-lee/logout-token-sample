@@ -144,7 +144,9 @@ func (h *AuthHandler) HandleLogout(c *gin.Context) {
 	}
 
 	session.Clear()
-	session.Save()
+	if err := session.Save(); err != nil {
+		log.Printf("Error saving session during logout: %v", err)
+	}
 
 	logoutURL := h.config.GetLogoutURL()
 	c.JSON(http.StatusOK, gin.H{"logoutUrl": logoutURL})
@@ -206,3 +208,4 @@ func (h *AuthHandler) HandleBackchannelLogoutTest(c *gin.Context) {
 	log.Println("=== Backchannel Logout Test (GET) Called ===")
 	c.JSON(http.StatusOK, gin.H{"message": "Backchannel logout endpoint is working"})
 }
+

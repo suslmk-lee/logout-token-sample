@@ -1,0 +1,91 @@
+linters-settings:
+  errcheck:
+    # 특정 함수들의 에러 체크 제외
+    exclude-functions:
+      - (*gin.Context).Writer.Flush
+  
+  gocyclo:
+    # 복잡도 임계값
+    min-complexity: 15
+  
+  goconst:
+    # 최소 문자열 길이
+    min-len: 3
+    # 최소 발생 횟수
+    min-occurrences: 3
+  
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - style
+    disabled-checks:
+      - ifElseChain
+      - singleCaseSwitch
+  
+  goimports:
+    local-prefixes: keycloak-logout-backend-go
+  
+  gomnd:
+    settings:
+      mnd:
+        # 매직 넘버 체크 제외할 패턴
+        ignored-numbers: 32,64,100,200,201,400,401,403,404,500
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gocyclo
+    - gofmt
+    - goimports
+    - goconst
+    - gocritic
+    - gosec
+    - misspell
+    - revive
+  
+  disable:
+    - gomnd  # 매직 넘버 체크는 비활성화
+    - funlen # 함수 길이 체크는 비활성화
+    - godot  # 주석 마침표 체크는 비활성화
+
+issues:
+  # 최대 이슈 수 (0은 무제한)
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  
+  # 제외할 파일들
+  exclude-files:
+    - ".*_test.go"
+  
+  # 제외할 규칙들
+  exclude-rules:
+    # SSE Writer 관련 에러는 이미 처리함
+    - path: handlers/api.go
+      linters:
+        - errcheck
+      text: "Error return value of.*Writer.*is not checked"
+  
+  # 새로운 이슈만 체크
+  new: false
+
+run:
+  # 타임아웃
+  timeout: 5m
+  
+  # 체크할 경로
+  skip-dirs:
+    - vendor
+  
+  # Go 버전
+  go: "1.21"
+
+output:
+  format: colored-line-number
+  print-issued-line: true
+  print-linter-name: true

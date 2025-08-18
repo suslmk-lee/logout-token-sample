@@ -63,7 +63,7 @@ func (h *APIHandler) HandleGetUser(c *gin.Context) {
 // HandleGetSessions returns all active sessions
 func (h *APIHandler) HandleGetSessions(c *gin.Context) {
 	sessions := h.sessionService.GetAllSessions()
-	
+
 	sessionList := make([]gin.H, 0, len(sessions))
 	for _, session := range sessions {
 		name := session.User.DisplayName
@@ -88,13 +88,13 @@ func (h *APIHandler) HandleGetSessions(c *gin.Context) {
 // HandleSessionStatus returns current session status
 func (h *APIHandler) HandleSessionStatus(c *gin.Context) {
 	log.Println("Session status check called")
-	
+
 	session := sessions.Default(c)
 	userID := session.Get("user_id")
-	
+
 	isAuthenticated := userID != nil
 	log.Printf("Is authenticated: %v", isAuthenticated)
-	
+
 	var sessionActive bool
 	if isAuthenticated {
 		log.Printf("User ID: %s", userID)
@@ -116,7 +116,7 @@ func (h *APIHandler) HandleSessionStatus(c *gin.Context) {
 // HandleSSE handles Server-Sent Events connection
 func (h *APIHandler) HandleSSE(c *gin.Context) {
 	userID := c.GetString("user_id")
-	
+
 	log.Printf("SSE client connected: %s", userID)
 
 	// Set SSE headers
@@ -136,7 +136,10 @@ func (h *APIHandler) HandleSSE(c *gin.Context) {
 	defer h.sessionService.RemoveSSEClient(userID)
 
 	// Send initial connection message
-	c.Writer.WriteString("data: connected\n\n")
+	if _, err := c.Writer.WriteString("data: connected\n\n"); err != nil {
+		log.Printf("Error writing SSE initial message: %v", err)
+		return
+	}
 	c.Writer.Flush()
 
 	// Create keepalive ticker to prevent connection timeout (every 3 seconds)
@@ -148,11 +151,17 @@ func (h *APIHandler) HandleSSE(c *gin.Context) {
 		select {
 		case message := <-client.C:
 			log.Printf("📨 Sending SSE message to %s: %s", userID, message)
-			c.Writer.WriteString(fmt.Sprintf("data: %s\n\n", message))
+			if _, err := c.Writer.WriteString(fmt.Sprintf("data: %s\n\n", message)); err != nil {
+				log.Printf("Error writing SSE message: %v", err)
+				return
+			}
 			c.Writer.Flush()
 		case <-keepalive.C:
 			// Send keepalive ping to prevent browser timeout
-			c.Writer.WriteString(": keepalive\n\n")
+			if _, err := c.Writer.WriteString(": keepalive\n\n"); err != nil {
+				log.Printf("Error writing SSE keepalive: %v", err)
+				return
+			}
 			c.Writer.Flush()
 		case <-client.Done:
 			log.Printf("SSE client disconnected: %s", userID)
@@ -163,3 +172,4 @@ func (h *APIHandler) HandleSSE(c *gin.Context) {
 		}
 	}
 }
+

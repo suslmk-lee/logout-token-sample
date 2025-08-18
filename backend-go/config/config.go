@@ -9,13 +9,13 @@ import (
 
 // Config holds all application configuration
 type Config struct {
-	KeycloakURL    string
-	KeycloakRealm  string
-	ClientID       string
-	ClientSecret   string
-	SessionSecret  string
-	Port           string
-	FrontendURL    string
+	KeycloakURL   string
+	KeycloakRealm string
+	ClientID      string
+	ClientSecret  string
+	SessionSecret string
+	Port          string
+	FrontendURL   string
 }
 
 // LoadConfig loads configuration from environment variables

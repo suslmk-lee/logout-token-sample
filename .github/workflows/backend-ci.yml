@@ -43,8 +43,9 @@ jobs:
       - name: Run linter
         uses: golangci/golangci-lint-action@v3
         with:
-          version: latest
+          version: v1.64.8
           working-directory: ./backend-go
+          args: --config .golangci.yml --timeout 5m
 
   build-and-push:
     runs-on: ubuntu-latest
