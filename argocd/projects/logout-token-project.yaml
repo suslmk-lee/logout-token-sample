@@ -15,12 +15,12 @@ spec:
   
   # 배포 대상 클러스터 및 네임스페이스 제한
   destinations:
-    - namespace: 'logout-token-dev'
-      server: 'https://kubernetes.default.svc'
+    - namespace: 'default'
+      server: 'https://256e2f2f-9005-46d1-a06d-2c45e8b35ef9.kr.vnks.gov-ntruss.com'
     - namespace: 'logout-token-staging'
-      server: 'https://kubernetes.default.svc'
+      server: 'https://256e2f2f-9005-46d1-a06d-2c45e8b35ef9.kr.vnks.gov-ntruss.com'
     - namespace: 'logout-token-prod'
-      server: 'https://kubernetes.default.svc'
+      server: 'https://256e2f2f-9005-46d1-a06d-2c45e8b35ef9.kr.vnks.gov-ntruss.com'
   
   # 클러스터 리소스 권한 설정
   clusterResourceWhitelist:
