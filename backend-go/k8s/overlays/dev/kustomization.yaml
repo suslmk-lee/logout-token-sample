@@ -18,7 +18,7 @@ patchesStrategicMerge:
 
 images:
   - name: logout-token-backend
-    newName: harbor.k-paas.org/cp-portal-service/logout-token-backend
+    newName: registry-dev2.k-paas.org/kpaas/logout-token-sample
     newTag: dev-latest
 
 configMapGenerator:

@@ -15,7 +15,7 @@ spec:
   # 소스 설정
   source:
     repoURL: https://github.com/suslmk-lee/logout-token-sample
-    targetRevision: dev
+    targetRevision: feature/dev
     path: backend-go/k8s/overlays/dev
   
   # 대상 클러스터
