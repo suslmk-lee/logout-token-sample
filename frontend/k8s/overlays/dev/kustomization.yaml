@@ -18,4 +18,4 @@ patchesStrategicMerge:
 images:
   - name: logout-token-frontend
     newName: registry-dev2.k-paas.org/kpaas/logout-token-sample-ui
-    newTag: dev-latest
+    newTag: feature-dev
