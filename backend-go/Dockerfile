@@ -29,9 +29,9 @@ RUN adduser -D -u 1000 appuser
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 빌드된 바이너리 복사하고 실행 권한 부여
-COPY --from=builder /app/main .
-RUN chmod +x ./main
+# 빌드된 바이너리 복사하고 소유권 및 실행 권한 설정
+COPY --from=builder --chown=appuser:appuser /app/main .
+RUN chmod 755 ./main
 
 # 사용자 권한 변경
 USER appuser
