@@ -23,11 +23,18 @@ FROM alpine:latest
 # 보안 업데이트 및 ca-certificates 설치 (HTTPS 요청용)
 RUN apk --no-cache add ca-certificates tzdata
 
-# 작업 디렉토리 설정
-WORKDIR /root/
+# 비루트 사용자 생성
+RUN adduser -D -u 1000 appuser
 
-# 빌드된 바이너리 복사
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 빌드된 바이너리 복사하고 실행 권한 부여
 COPY --from=builder /app/main .
+RUN chmod +x ./main
+
+# 사용자 권한 변경
+USER appuser
 
 # 포트 노출
 EXPOSE 3001
