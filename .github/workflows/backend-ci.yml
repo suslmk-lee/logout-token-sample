@@ -9,8 +9,8 @@ on:
     paths: ['backend-go/**']
 
 env:
-  REGISTRY: harbor.k-paas.org
-  IMAGE_NAME: cp-portal-service/logout-token-backend
+  REGISTRY: registry-dev2.k-paas.org
+  IMAGE_NAME: kpaas/logout-token-sample
 
 jobs:
   test:
