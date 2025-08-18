@@ -25,11 +25,10 @@ linters-settings:
   goimports:
     local-prefixes: keycloak-logout-backend-go
   
-  gomnd:
+  mnd:
     settings:
-      mnd:
-        # 매직 넘버 체크 제외할 패턴
-        ignored-numbers: 32,64,100,200,201,400,401,403,404,500
+      # 매직 넘버 체크 제외할 패턴
+      ignored-numbers: "32,64,100,200,201,400,401,403,404,500"
 
 linters:
   enable:
@@ -48,6 +47,7 @@ linters:
     - gosec
     - misspell
     - revive
+    - mnd
   
   disable:
     - funlen # 함수 길이 체크는 비활성화
@@ -87,5 +87,3 @@ run:
 output:
   formats:
     - format: colored-line-number
-      print-issued-line: true
-      print-linter-name: true
