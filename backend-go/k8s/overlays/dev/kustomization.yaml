@@ -19,7 +19,7 @@ patchesStrategicMerge:
 images:
   - name: logout-token-backend
     newName: registry-dev2.k-paas.org/kpaas/logout-token-sample
-    newTag: latest
+    newTag: feature-dev
 
 configMapGenerator:
   - name: logout-token-backend-config
