@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: logout-token-backend-prod
+
+namespace: logout-token-prod
+
+resources:
+  - ../../base
+
+commonLabels:
+  environment: prod
+
+patchesStrategicMerge:
+  - deployment-patch.yaml
+  - configmap-patch.yaml
+
+images:
+  - name: logout-token-backend
+    newName: harbor.k-paas.org/cp-portal-service/logout-token-backend
+    newTag: latest
+
+configMapGenerator:
+  - name: logout-token-backend-config
+    behavior: merge
+    literals:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - GIN_MODE=release

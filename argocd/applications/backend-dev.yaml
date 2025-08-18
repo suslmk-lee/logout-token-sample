@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: logout-token-backend-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: logout-token-backend
+    app.kubernetes.io/component: backend
+    environment: dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: logout-token-project
+  
+  # 소스 설정
+  source:
+    repoURL: https://github.com/suslmk-lee/logout-token-sample
+    targetRevision: dev
+    path: backend-go/k8s/overlays/dev
+  
+  # 대상 클러스터
+  destination:
+    server: https://256e2f2f-9005-46d1-a06d-2c45e8b35ef9.kr.vnks.gov-ntruss.com
+    namespace: default
+  
+  # 동기화 설정
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  # 헬스체크 설정
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

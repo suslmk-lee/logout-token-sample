@@ -1,0 +1,123 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: logout-token-project
+  namespace: argocd
+  labels:
+    project: logout-token
+spec:
+  description: "Logout Token Sample Project with Keycloak OIDC and Backchannel Logout"
+  
+  # 소스 저장소 제한
+  sourceRepos:
+    - 'https://github.com/suslmk-lee/logout-token-sample'
+    - 'https://github.com/suslmk-lee/logout-token-sample.git'
+  
+  # 배포 대상 클러스터 및 네임스페이스 제한
+  destinations:
+    - namespace: 'logout-token-dev'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'logout-token-staging'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'logout-token-prod'
+      server: 'https://kubernetes.default.svc'
+  
+  # 클러스터 리소스 권한 설정
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: 'networking.k8s.io'
+      kind: NetworkPolicy
+  
+  # 네임스페이스 리소스 권한 설정
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ServiceAccount
+    - group: 'apps'
+      kind: Deployment
+    - group: 'apps'
+      kind: ReplicaSet
+    - group: ''
+      kind: Pod
+    - group: 'networking.k8s.io'
+      kind: Ingress
+    - group: 'networking.k8s.io'
+      kind: NetworkPolicy
+    - group: 'policy'
+      kind: PodDisruptionBudget
+    - group: 'autoscaling'
+      kind: HorizontalPodAutoscaler
+  
+  # 거부할 리소스 (보안상 제한)
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+    - group: 'rbac.authorization.k8s.io'
+      kind: Role
+    - group: 'rbac.authorization.k8s.io'
+      kind: RoleBinding
+  
+  # OrphanedResources 설정 (고아 리소스 정리)
+  orphanedResources:
+    warn: true
+    ignore:
+      - group: 'apps'
+        kind: ReplicaSet
+        name: '*'
+      - group: ''
+        kind: Pod
+        name: '*'
+  
+  # 동기화 정책
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'  # 항상 허용
+      duration: 24h
+      applications: ['*']
+      manualSync: true
+    - kind: deny
+      schedule: '0 2 * * 0'  # 매주 일요일 오전 2시는 자동 동기화 금지 (유지보수 시간)
+      duration: 2h
+      applications: ['*']
+      manualSync: false
+  
+  # Role 설정
+  roles:
+    # 개발자 역할
+    - name: developer
+      description: "개발자 권한 - 개발 환경 읽기/쓰기, 스테이징 읽기 전용"
+      policies:
+        - p, proj:logout-token-project:developer, applications, get, logout-token-project/*, allow
+        - p, proj:logout-token-project:developer, applications, sync, logout-token-project/*-dev, allow
+        - p, proj:logout-token-project:developer, applications, sync, logout-token-project/*-staging, deny
+        - p, proj:logout-token-project:developer, logs, get, logout-token-project/*, allow
+        - p, proj:logout-token-project:developer, exec, create, logout-token-project/*-dev, allow
+      groups:
+        - 'logout-token-developers'
+    
+    # 운영자 역할
+    - name: operator
+      description: "운영자 권한 - 모든 환경 읽기/쓰기"
+      policies:
+        - p, proj:logout-token-project:operator, applications, *, logout-token-project/*, allow
+        - p, proj:logout-token-project:operator, logs, get, logout-token-project/*, allow
+        - p, proj:logout-token-project:operator, exec, create, logout-token-project/*, allow
+      groups:
+        - 'logout-token-operators'
+    
+    # 읽기 전용 역할
+    - name: readonly
+      description: "읽기 전용 권한 - 모든 환경 읽기 전용"
+      policies:
+        - p, proj:logout-token-project:readonly, applications, get, logout-token-project/*, allow
+        - p, proj:logout-token-project:readonly, logs, get, logout-token-project/*, allow
+      groups:
+        - 'logout-token-viewers'

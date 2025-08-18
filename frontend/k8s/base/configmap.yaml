@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logout-token-frontend-config
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+      
+      sendfile on;
+      tcp_nopush on;
+      tcp_nodelay on;
+      keepalive_timeout 65;
+      types_hash_max_size 2048;
+      
+      gzip on;
+      gzip_vary on;
+      gzip_proxied any;
+      gzip_comp_level 6;
+      gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+      
+      server {
+        listen 8080;
+        server_name localhost;
+        
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+        
+        # React Router를 위한 설정
+        location / {
+          try_files $uri $uri/ /index.html;
+        }
+        
+        # 정적 파일 캐싱
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+          expires 1y;
+          add_header Cache-Control "public, immutable";
+        }
+        
+        # 보안 헤더
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-XSS-Protection "1; mode=block";
+        add_header X-Content-Type-Options "nosniff";
+      }
+    }
