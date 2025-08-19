@@ -4,7 +4,7 @@ kind: Kustomization
 metadata:
   name: logout-token-frontend-dev
 
-namespace: logout-token-dev
+namespace: default
 
 resources:
   - ../../base
