@@ -139,7 +139,7 @@ func (h *AuthHandler) HandleLogout(c *gin.Context) {
 
 	if userID != nil {
 		h.sessionService.RemoveSession(userID.(string))
-		h.sessionService.RemoveSSEClient(userID.(string))
+		h.sessionService.RemoveAllSSEClientsForUser(userID.(string))
 		log.Printf("User logged out: %s", userID)
 	}
 

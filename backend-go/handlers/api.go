@@ -132,8 +132,8 @@ func (h *APIHandler) HandleSSE(c *gin.Context) {
 		Done:   make(chan bool),
 	}
 
-	h.sessionService.AddSSEClient(userID, client)
-	defer h.sessionService.RemoveSSEClient(userID)
+	clientID := h.sessionService.AddSSEClient(userID, client)
+	defer h.sessionService.RemoveSSEClient(userID, clientID)
 
 	// Send initial connection message
 	if _, err := c.Writer.WriteString("data: connected\n\n"); err != nil {
